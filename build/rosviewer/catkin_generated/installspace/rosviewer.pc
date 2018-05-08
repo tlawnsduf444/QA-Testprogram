@@ -1,0 +1,8 @@
+prefix=/home/joonyeol/qa_ws/install
+
+Name: rosviewer
+Description: Description of rosviewer
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/joonyeol/qa_ws/install/lib 
+Requires: 

@@ -1,0 +1,2 @@
+rosviewer:testprogram
+-DCATKIN_DEVEL_PREFIX=/home/joonyeol/qa_ws/devel -DCMAKE_INSTALL_PREFIX=/home/joonyeol/qa_ws/install -G Unix Makefiles

@@ -1,0 +1,8 @@
+prefix=/home/joonyeol/qa_ws/devel
+
+Name: testprogram
+Description: Description of testprogram
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/joonyeol/qa_ws/devel/lib 
+Requires: 
