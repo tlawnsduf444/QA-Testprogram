@@ -7,3 +7,6 @@ def callback(msg):
 
 def cliff():
     cliff_sub = rospy.Subscriber('/core/psd_bottom', Ranges, callback)
+
+def stop():
+    cliff_sub.unregister()

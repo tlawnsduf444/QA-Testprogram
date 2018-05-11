@@ -6,4 +6,8 @@ def callback(msg):
     rospy.set_param("bumper", str(msg.bumpers[1].is_pressed) + '\t' + str(msg.bumpers[4].is_pressed))
 
 def bumper():
-    battery_sub = rospy.Subscriber('/core/bumper', Bumpers, callback)
+    global bumper_sub
+    bumper_sub = rospy.Subscriber('/core/bumper', Bumpers, callback)
+
+def stop():
+    bumper_sub.unregister()

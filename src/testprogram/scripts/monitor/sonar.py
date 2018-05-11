@@ -7,3 +7,6 @@ def callback(msg):
 
 def sonar():
     sonar_sub = rospy.Subscriber('/core/sonars', Ranges, callback)
+
+def stop():
+    sonar_sub.unregister()

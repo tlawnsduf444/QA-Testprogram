@@ -2,13 +2,13 @@
 # -*- coding:utf-8 -*-
 
 def explain(name):
-    if name == "Battery Percentage":
+    if name == "Battery_Percentage":
         return '배터리의 남은 용량을 보여줍니다.'
     
-    elif name == "Battery Voltage":
+    elif name == "Battery_Voltage":
         return '배터리의 전압을 보여줍니다.'
 
-    elif name == "Battery Current":
+    elif name == "Battery_Current":
         return '배터리의 전류값을 보여줍니다.'
 
     elif name == "Bumper":
@@ -20,16 +20,16 @@ def explain(name):
     elif name == "Cliff":
         return '절벽 센서의 값을 보여줍니다.'
 
-    elif name == "Motor Current":
+    elif name == "Motor_Current":
         return '모터의 전류값을 보여줍니다.'
 
-    elif name == "Motor Voltage":
+    elif name == "Motor_Voltage":
         return '모터의 전압값을 보여줍니다.'
 
-    elif name == "Motor Temperature":
+    elif name == "Motor_Temperature":
         return '모터의 온도값을 보여줍니다.'
 
-    elif name == "Motor Board Temperatures":
+    elif name == "Motor_Board_Temperatures":
         return '모터 보드의 온도값을 보여줍니다.'
 
     elif name == "Veloticy":

@@ -7,3 +7,6 @@ def callback(msg):
 
 def velocity():
     velocity_sub = rospy.Subscriber('/core/odom', Odometry, callback)
+
+def stop():
+    velocity_sub.unregister()
