@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 import rospy
 import os
+import time
 from gopher_sentience_msgs.msg import Reality
 from std_msgs.msg import Empty
 battery_flag = True
@@ -13,7 +14,7 @@ def stop():
 
 def start():
     global goal, stop, sub, filename
-    filename = str(time.ctime().split(' ')[-4]) + '\t' + str(time.ctime().split(' ')[-3]) + str(time.ctime().split(' ')[-2])
+    filename = str(time.ctime().split(' ')[-4]) + str(time.ctime().split(' ')[-3]) + "\t" + str(time.ctime().split(' ')[-2])
     if not os.path.exists("/home/yujin/qa_file/delivery_file"):
         os.makedirs("/home/yujin/qa_file/delivery_file")
 
@@ -29,8 +30,8 @@ def callback(msg):
         if charge == True:
             if battery_flag == True:
                 if battery >= 35:
+                    goal.publish(Empty())
                     if flag == True:
-                        goal.publish(Empty())
                         cnt += 1
                         with open("/home/yujin/qa_file/delivery_file/" + filename, "a") as f:
                             f.write("%s\t%s\t%s\n"%(str(cnt),str(battery),str(time.ctime().split(' ')[-2])))

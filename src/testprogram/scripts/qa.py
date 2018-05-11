@@ -51,7 +51,7 @@ class app:
     def playapp(self, button):
         global filename
         if button == "Show":
-            filename = str(time.ctime().split(' ')[-4]) + '\t' + str(time.ctime().split(' ')[-3]) + str(time.ctime().split(' ')[-2])
+            filename = str(time.ctime().split(' ')[-4]) + str(time.ctime().split(' ')[-3]) + "\t" + str(time.ctime().split(' ')[-2])
             for i in range(len(self.testlist)):
                 self.app.clearLabel(self.testlist[i])
             self.checklist = self.app.getAllCheckBoxes()
@@ -67,7 +67,7 @@ class app:
         else:
             if self.aging_flag == True:
                 aging.start()
-                self.app.setButton("Delivery", "No-Delivery")
+                self.app.setButton("Delivery", "Stop-Delivery")
                 self.aging_flag = False
             else:
                 aging.stop()
