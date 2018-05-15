@@ -6,6 +6,7 @@ from appJar import gui
 from monitor import *
 from playapp import *
 import time
+from datetime import datetime
 
 class app:
     version = "v1.0"
@@ -30,7 +31,11 @@ class app:
             self.app.button("No-Write", self.yesorno, 0, 2)
             self.app.button("No-Debug", self.yesorno, 0, 3)
             self.app.addEntry("hz",0, 4)
+            self.app.addEntry("start",0, 5)
+            self.app.addEntry("stop",0, 6)
             self.app.setEntryDefault("hz", "몇초에 한 번 저장할까요?")
+            self.app.setEntryDefault("start", "몇%에서 출발할까요?")
+            self.app.setEntryDefault("stop", "몇%에서 충전할까요?")
             with self.app.panedFrame("LEFT"):
                 for i in range(len(self.testlist)):
                     self.app.checkBox(self.testlist[i])
@@ -49,9 +54,9 @@ class app:
         self.app.go()
 
     def playapp(self, button):
-        global filename
         if button == "Show":
-            filename = str(time.ctime().split(' ')[-4]) + str(time.ctime().split(' ')[-3]) + "\t" + str(time.ctime().split(' ')[-2])
+            now = datetime.now()  
+            self.filename = str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute) + str(now.second) + '.txt'
             for i in range(len(self.testlist)):
                 self.app.clearLabel(self.testlist[i])
             self.checklist = self.app.getAllCheckBoxes()
@@ -66,9 +71,12 @@ class app:
                     self.app.label("explain", "주기를 입력해주세요 ㅠㅠ")
         else:
             if self.aging_flag == True:
-                aging.start()
-                self.app.setButton("Delivery", "Stop-Delivery")
-                self.aging_flag = False
+                if self.app.getEntry("start") != "" and self.app.getEntry("stop") != "":
+                    aging.start(int(self.app.getEntry("start")), int(self.app.getEntry("stop")))
+                    self.app.setButton("Delivery", "Stop-Delivery")
+                    self.aging_flag = False
+                else:
+                    self.app.label("explain", "배터리를 입력해주세요 ㅠㅠ")
             else:
                 aging.stop()
                 self.app.setButton("Delivery", "Delivery")
@@ -79,11 +87,9 @@ class app:
             if self.write_flag == False:
                 self.app.setButton("No-Write", "Write")
                 self.write_flag = True
-                rospy.get_param("write", self.write_flag)
             else:
                 self.app.setButton("No-Write", "No-Write")
                 self.write_flag = False
-                rospy.get_param("write", self.write_flag)
         else:
             if self.debug_flag == False:
                 self.app.setButton("No-Debug", "Debug")
@@ -101,10 +107,11 @@ class app:
         for i in range(len(self.checklist)):
             if self.checklist[self.testlist[i]] == True:
                 self.app.label(self.testlist[i], rospy.get_param(self.testlist[i]))
-                if not os.path.exists("/home/yujin/qa_file/" + self.testlist[i] +"_file/"):
-                    os.makedirs("/home/yujin/qa_file/" + self.testlist[i] +"_file/")
-                with open("/home/yujin/qa_file/" + self.testlist[i] +"_file/" + filename, "a") as f:
-                    f.write(str(time.ctime().split(' ')[-2]) + '\t' + rospy.get_param(self.testlist[i]) + '\n')
+                if self.write_flag == True:
+                    if not os.path.exists("/home/yujin/qa_file/" + self.testlist[i] +"_file/"):
+                        os.makedirs("/home/yujin/qa_file/" + self.testlist[i] +"_file/")
+                    with open("/home/yujin/qa_file/" + self.testlist[i] +"_file/" + self.filename, "a") as f:
+                        f.write(str(time.ctime().split(' ')[-2]) + '\t' + rospy.get_param(self.testlist[i]) + '\n')
 
 if __name__ == "__main__":
     qatest = app()
