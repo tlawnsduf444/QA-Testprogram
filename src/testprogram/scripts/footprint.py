@@ -16,12 +16,12 @@ class Capture:
     pose = list()
     jjal = 0
     def __init__(self):
-        with open("/home/joonyeol/Pose/pose.txt", "r") as f:
+        with open("/home/joonyeol/Downloads/3F_0517/2018517172857.txt", "r") as f:
             line = f.readline()
             self.data.append(line.split('\t'))
             while line:
                 line = f.readline()
-                if self.jjal % 3 == 0:
+                if self.jjal % 5 == 0:
                     self.data.append(line.split('\t'))
                 self.jjal += 1
 
@@ -43,11 +43,11 @@ class Capture:
                         runflag = False
         
             self.screen.fill(self.WHITE)
-            self.pose.append([int(float(self.data[self.cnt][1])*100)+600,int(float(self.data[self.cnt][2])*100)+400])
+            self.pose.append([int(float(self.data[self.cnt][1])*100)+600,int(float(self.data[self.cnt][2])*(-100))+650])
             self.drawtext()
             self.drawObject()
             pygame.display.update()
-            self.clock.tick(3600)
+            self.clock.tick(100)
             self.cnt += 1
 
         pygame.quit()
@@ -58,10 +58,10 @@ class Capture:
         self.screen.blit(text1,(0,0))
 
     def drawObject(self):
-        pygame.draw.circle(self.screen, self.BLUE, self.pose[self.cnt], 10)
         for i in range(len(self.pose)):
-            pygame.draw.circle(self.screen, self.RED, self.pose[i], 1)
-
+            pygame.draw.circle(self.screen, self.RED, self.pose[i], 2)
+        pygame.draw.circle(self.screen, self.BLUE, self.pose[self.cnt], 10)
+        
 if __name__ == "__main__":
     start = Capture()
     start.runCapture()

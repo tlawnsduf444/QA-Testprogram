@@ -5,11 +5,10 @@ import os
 from appJar import gui
 from monitor import *
 from playapp import *
-import time
 from datetime import datetime
 
 class app:
-    version = "v1.0"
+    version = "v1.1"
     show_flag = True
     aging_flag = True
     write_flag = False
@@ -21,42 +20,42 @@ class app:
     def __init__(self):
         rospy.init_node('QA', anonymous=True)
         self.app = gui("QA Test Program " + self.version, "1000x800")
-        self.app.startTabbedFrame("TabbedFrame")
-        self.app.startTab("Test")
         #테스트 리스트#
         with self.app.panedFrameVertical("TOP"):
             self.app.setInPadding([10,5])
+
             self.app.button("Show", self.playapp, 0, 0, sticky="ew")
             self.app.button("Delivery", self.playapp, 0, 1)
             self.app.button("No-Write", self.yesorno, 0, 2)
             self.app.button("No-Debug", self.yesorno, 0, 3)
-            self.app.addEntry("hz",0, 4)
-            self.app.addEntry("start",0, 5)
-            self.app.addEntry("stop",0, 6)
+
+            self.app.addNumericEntry("hz",0, 4)
+            self.app.addNumericEntry("start",0, 5)
+            self.app.addNumericEntry("stop",0, 6)
+            self.app.setEntry("hz", "1", callFunction=True)
+            self.app.setEntry("start", "40", callFunction=True)
+            self.app.setEntry("stop", "60", callFunction=True)
             self.app.setEntryDefault("hz", "몇초에 한 번 저장할까요?")
-            self.app.setEntryDefault("start", "몇%에서 출발할까요?")
-            self.app.setEntryDefault("stop", "몇%에서 충전할까요?")
+            self.app.setEntryDefault("start", "몇%에서 충전할까요?")
+            self.app.setEntryDefault("stop", "몇%에서 출발할까요?")
+
             with self.app.panedFrame("LEFT"):
                 for i in range(len(self.testlist)):
                     self.app.checkBox(self.testlist[i])
                     self.app.setCheckBoxOverFunction(self.testlist[i], self.showexplain)
             #설명하는 곳#
                 with self.app.panedFrame("RIGHT"):
-                    with self.app.labelFrame("Explain"):
-                        self.app.label("explain", "체크리스트에 마우스를 가져가면 그에 대한 설명이 보입니다.", sticky = "ew")
-                    with self.app.labelFrame("Information", sticky = "ew"):
+                    with self.app.labelFrame("Explain", sticky = 'ew'):
+                        self.app.label("explain", "체크리스트에 마우스를 가져가면 그에 대한 설명이 보입니다.")
+                    with self.app.labelFrame("Information"):
                         for i in range(len(self.testlist)):
                             self.app.label(self.testlist[i], "")
-        
-        self.app.stopTab()
-        self.app.stopTabbedFrame()
-        
         self.app.go()
 
     def playapp(self, button):
         if button == "Show":
             now = datetime.now()  
-            self.filename = str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute) + str(now.second) + '.txt'
+            self.filename = now.strftime('%Y%m%d%H%M%S') + '.txt'
             for i in range(len(self.testlist)):
                 self.app.clearLabel(self.testlist[i])
             self.checklist = self.app.getAllCheckBoxes()
@@ -104,14 +103,16 @@ class app:
         self.app.label("explain", explain.explain(name))
 
     def showinfo(self):
+        if self.aging_flag == False:
+            self.app.label("explain", rospy.get_param("RobotStatus"))
         for i in range(len(self.checklist)):
             if self.checklist[self.testlist[i]] == True:
                 self.app.label(self.testlist[i], rospy.get_param(self.testlist[i]))
                 if self.write_flag == True:
                     if not os.path.exists("/home/yujin/qa_file/" + self.testlist[i] +"_file/"):
                         os.makedirs("/home/yujin/qa_file/" + self.testlist[i] +"_file/")
-                    with open("/home/yujin/qa_file/" + self.testlist[i] +"_file/" + self.filename, "a") as f:
-                        f.write(str(time.ctime().split(' ')[-2]) + '\t' + rospy.get_param(self.testlist[i]) + '\n')
+                    with open("/home/yujin/qa_file/" + self.testlist[i] +"_file/" + self.testlist[i] + self.filename, "a") as f:
+                        f.write(datetime.now().strftime('%H시%M분%S초') + '\t' + rospy.get_param(self.testlist[i]) + '\n')
 
 if __name__ == "__main__":
     qatest = app()

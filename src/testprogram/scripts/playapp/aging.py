@@ -2,15 +2,15 @@
 # -*- coding:utf-8 -*-
 import rospy
 import os
-import time
 from datetime import datetime
 from gopher_sentience_msgs.msg import Reality
 from std_msgs.msg import Empty
 battery_flag = True
 flag = True
+write_flag = False
 cnt = 0
-new_time = 0
-old_time = 0
+starttime = None
+stoptime = None
 
 def stop():
     sub.unregister()
@@ -20,7 +20,7 @@ def start(startb, stopb):
     startbattery = startb
     stopbattery = stopb
     now = datetime.now()  
-    filename = str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute) + str(now.second) + '.txt'
+    filename = now.strftime('%Y%m%d%H%M%S') + '.txt'
     if not os.path.exists("/home/yujin/qa_file/delivery_file"):
         os.makedirs("/home/yujin/qa_file/delivery_file")
 
@@ -28,25 +28,32 @@ def start(startb, stopb):
     sub = rospy.Subscriber('/sentience/reality', Reality, callback)
     
 def callback(msg):
-    global battery_flag, cnt, flag, new_time, old_time
+    global battery_flag, cnt, flag, write_flag, starttime, stoptime
     charge = msg.charging
     battery = msg.battery_level
     status = msg.status
     if status == 0:
         if charge == True:
+            if write_flag == True:
+                stoptime = datetime.now()
+                with open("/home/yujin/qa_file/delivery_file/" + filename, "a") as f:
+                    f.write('\t' + stoptime.strftime('%H시 %M분 %S초') + '\t' + str(stoptime - starttime) + '\n')
+                write_flag = False
             if battery_flag == True:
                 if battery >= startbattery:
                     goal.publish(Empty())
-                    if flag == True:
+                    if flag == True:    
                         cnt += 1
+                        starttime = datetime.now()
                         with open("/home/yujin/qa_file/delivery_file/" + filename, "a") as f:
-                            new_time = time.ctime().split(' ')[-2]
-                            f.write("%s\t%s\t%s\n"%(str(cnt),str(battery),str(new_time)))
-                            old_time = new_time
+                            f.write(str(cnt) + '\t' + str(battery) + '\t' + starttime.strftime('%H시 %M분 %S초'))
+                        write_flag = True
                         flag = False
+                        rospy.set_param("RobotStatus", str(cnt) + '\t' + "Traveling")
                 else:
                     battery_flag = False
             else:
+                rospy.set_param("RobotStatus", str(cnt) + '\t' + "Charging")
                 if battery >= stopbattery:
                     battery_flag = True
     else:
