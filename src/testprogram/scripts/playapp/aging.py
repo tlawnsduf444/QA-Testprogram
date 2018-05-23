@@ -47,7 +47,6 @@ def callback(msg):
                         starttime = datetime.now()
                         with open("/home/yujin/qa_file/delivery_file/" + filename, "a") as f:
                             f.write(str(cnt) + '\t' + str(battery) + '\t' + starttime.strftime('%H시 %M분 %S초'))
-                        write_flag = True
                         flag = False
                         rospy.set_param("RobotStatus", str(cnt) + '\t' + "Traveling")
                 else:
@@ -57,5 +56,5 @@ def callback(msg):
                 if battery >= stopbattery:
                     battery_flag = True
     else:
+        write_flag = True
         flag = True
-        

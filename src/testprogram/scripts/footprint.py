@@ -14,14 +14,17 @@ class Capture:
     cnt = 0
     data = list()
     pose = list()
+    theta = list()
+    arrow = list()
     jjal = 0
+
     def __init__(self):
-        with open("/home/joonyeol/Downloads/3F_0517/2018517172857.txt", "r") as f:
+        with open("/home/joonyeol/Downloads/2018516173134.txt", "r") as f:
             line = f.readline()
             self.data.append(line.split('\t'))
             while line:
                 line = f.readline()
-                if self.jjal % 5 == 0:
+                if self.jjal % 1 == 0:
                     self.data.append(line.split('\t'))
                 self.jjal += 1
 
@@ -43,23 +46,29 @@ class Capture:
                         runflag = False
         
             self.screen.fill(self.WHITE)
-            self.pose.append([int(float(self.data[self.cnt][1])*100)+600,int(float(self.data[self.cnt][2])*(-100))+650])
+            self.arrow.append(None)
+            self.pose.append([int(float(self.data[self.cnt][1])*200)+600,int(float(self.data[self.cnt][2])*(-200))+550])
+            self.theta.append(int(float(self.data[self.cnt][3])*360))
+            self.arrow[self.cnt] = pygame.image.load('arrow.png')
+            self.arrow[self.cnt] = pygame.transform.scale(self.arrow[self.cnt], (12, 10))
+            self.arrow[self.cnt] = pygame.transform.rotate(self.arrow[self.cnt], self.theta[self.cnt])
             self.drawtext()
             self.drawObject()
             pygame.display.update()
-            self.clock.tick(100)
+            self.clock.tick(4)
             self.cnt += 1
-
         pygame.quit()
 
     def drawtext(self):
         font = pygame.font.SysFont(None, 40)
         text1 = font.render(str(self.data[self.cnt][0]), True, self.BLACK)
+        text2 = font.render(str(self.theta[self.cnt]), True, self.BLACK)
         self.screen.blit(text1,(0,0))
+        self.screen.blit(text2,(200,0))
 
     def drawObject(self):
         for i in range(len(self.pose)):
-            pygame.draw.circle(self.screen, self.RED, self.pose[i], 2)
+            self.screen.blit(self.arrow[i], self.pose[i])   
         pygame.draw.circle(self.screen, self.BLUE, self.pose[self.cnt], 10)
         
 if __name__ == "__main__":
